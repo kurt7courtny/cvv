@@ -24,22 +24,22 @@ Build a modern, responsive Vue.js website that provides an intuitive interface f
 ### Core Application Features
 
 #### 1. User Authentication & Management
-**Prompt File:** `src/web/authentication.md`
+**Prompt File:** `docs/vvc-web-authentication.md`
 
 #### 2. File Upload & Management System
-**Prompt File:** `src/web/file-upload.md`
+**Prompt File:** `docs/vvc-web-file-upload.md`
 
 #### 3. Voice Extraction & Script Generation
-**Prompt File:** `src/web/voice-extraction.md`
+**Prompt File:** `docs/vvc-web-voice-extraction.md`
 
 #### 4. Voice Cloning & Language Conversion
-**Prompt File:** `src/web/voice-cloning.md`
+**Prompt File:** `docs/vvc-web-voice-cloning.md`
 
 #### 5. Video Preview & Management
-**Prompt File:** `src/web/video-preview.md`
+**Prompt File:** `docs/vvc-web-video-preview.md`
 
 #### 6. Dashboard & Analytics
-**Prompt File:** `src/web/dashboard.md`
+**Prompt File:** `docs/vvc-web-dashboard.md`
 
 ### User Interface Requirements
 - Responsive design for desktop, tablet, and mobile
@@ -71,44 +71,22 @@ Develop a robust Python-based microservices architecture to handle video process
 ### Core Services Architecture
 
 #### 1. API Gateway Service
-**Prompt File:** `src/pipeline/api-gateway.md`
+**Prompt File:** `docs/vvc-pipeline-api-gateway.md`
 
-#### 2. Audio Processing Service
-**Prompt File:** `src/pipeline/audio-processing.md`
+#### 2. Audio Processing & Speech-to-Text Service
+**Prompt File:** `docs/vvc-pipeline-audio-speech.md`
 
-#### 3. Speech-to-Text Service
-**Prompt File:** `src/pipeline/speech-to-text.md`
+#### 3. Voice Cloning Service
+**Prompt File:** `docs/vvc-pipeline-voice-cloning-service.md`
 
-#### 4. Voice Cloning Service
-**Prompt File:** `src/pipeline/voice-cloning-service.md`
+#### 4. Video Processing Service
+**Prompt File:** `docs/vvc-pipeline-video-processing.md`
 
-#### 5. Video Processing Service
-**Prompt File:** `src/pipeline/video-processing.md`
-
-#### 6. Task Management Service
-**Prompt File:** `src/pipeline/task-management.md`
-
-### Database Schema
-
-#### Core Tables
-```sql
--- Users and authentication
-users (id, email, password_hash, created_at, subscription_tier)
-user_sessions (id, user_id, token, expires_at)
-
--- Projects and files
-projects (id, user_id, name, status, created_at, updated_at)
-video_files (id, project_id, original_name, file_path, size, duration)
-audio_files (id, video_file_id, file_path, sample_rate, channels)
-
--- Processing and results
-processing_jobs (id, project_id, job_type, status, progress, created_at)
-voice_profiles (id, user_id, name, model_path, characteristics)
-transcripts (id, audio_file_id, content, language, confidence_score)
-```
+#### 5. Task Management Service
+**Prompt File:** `docs/vvc-pipeline-task-management.md`
 
 ### API Endpoints
-**Reference File:** `src/pipeline/api-endpoints.md`
+**Reference File:** `docs/vvc-pipeline-api-endpoints.md`
 
 Complete API documentation including request/response formats, authentication, error handling, and rate limiting.
 

@@ -231,6 +231,180 @@ All endpoints may return the following error responses:
 - **Processing endpoints:** 20 requests per hour per user
 - **Other endpoints:** 100 requests per minute per user
 
+## Database Schema
+
+The following database schema supports all API endpoints and operations:
+
+### Core Tables
+
+#### Users and Authentication
+```sql
+-- User management
+users (
+  id UUID PRIMARY KEY,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  password_hash VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW(),
+  subscription_tier VARCHAR(50) DEFAULT 'free',
+  is_active BOOLEAN DEFAULT true
+);
+
+-- Session management for auth endpoints
+user_sessions (
+  id UUID PRIMARY KEY,
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  access_token VARCHAR(500) NOT NULL,
+  refresh_token VARCHAR(500),
+  expires_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW(),
+  is_revoked BOOLEAN DEFAULT false
+);
+```
+
+#### Projects and Files
+```sql
+-- Project management for file organization
+projects (
+  id UUID PRIMARY KEY,
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  name VARCHAR(255) NOT NULL,
+  description TEXT,
+  status VARCHAR(50) DEFAULT 'active',
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
+
+-- File management for upload/download endpoints
+video_files (
+  id UUID PRIMARY KEY,
+  project_id UUID REFERENCES projects(id) ON DELETE CASCADE,
+  original_name VARCHAR(255) NOT NULL,
+  file_path VARCHAR(500) NOT NULL,
+  file_size BIGINT NOT NULL,
+  duration_seconds INTEGER,
+  format VARCHAR(20),
+  resolution VARCHAR(20),
+  upload_status VARCHAR(50) DEFAULT 'pending',
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Audio extraction results
+audio_files (
+  id UUID PRIMARY KEY,
+  video_file_id UUID REFERENCES video_files(id) ON DELETE CASCADE,
+  file_path VARCHAR(500) NOT NULL,
+  sample_rate INTEGER NOT NULL,
+  channels INTEGER NOT NULL,
+  duration_seconds INTEGER,
+  format VARCHAR(20),
+  file_size BIGINT,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+```
+
+#### Processing and Jobs
+```sql
+-- Processing job tracking for status endpoints
+processing_jobs (
+  id UUID PRIMARY KEY,
+  project_id UUID REFERENCES projects(id) ON DELETE CASCADE,
+  job_type VARCHAR(50) NOT NULL, -- 'extract_audio', 'transcribe', 'clone_voice', 'generate_video'
+  status VARCHAR(50) DEFAULT 'pending', -- 'pending', 'processing', 'completed', 'failed'
+  progress INTEGER DEFAULT 0,
+  input_file_id UUID,
+  output_file_id UUID,
+  parameters JSONB,
+  error_message TEXT,
+  estimated_completion TIMESTAMP,
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Voice profile management
+voice_profiles (
+  id UUID PRIMARY KEY,
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  name VARCHAR(255) NOT NULL,
+  language VARCHAR(10) NOT NULL,
+  gender VARCHAR(20),
+  model_path VARCHAR(500),
+  audio_sample_id UUID REFERENCES audio_files(id),
+  characteristics JSONB,
+  is_public BOOLEAN DEFAULT false,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Transcription results
+transcripts (
+  id UUID PRIMARY KEY,
+  audio_file_id UUID REFERENCES audio_files(id) ON DELETE CASCADE,
+  processing_job_id UUID REFERENCES processing_jobs(id),
+  content TEXT NOT NULL,
+  language VARCHAR(10) NOT NULL,
+  confidence_score DECIMAL(3,2),
+  word_timestamps JSONB,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Generated voice clones
+voice_clones (
+  id UUID PRIMARY KEY,
+  voice_profile_id UUID REFERENCES voice_profiles(id) ON DELETE CASCADE,
+  transcript_id UUID REFERENCES transcripts(id),
+  target_language VARCHAR(10) NOT NULL,
+  cloned_audio_path VARCHAR(500),
+  text_content TEXT NOT NULL,
+  processing_job_id UUID REFERENCES processing_jobs(id),
+  created_at TIMESTAMP DEFAULT NOW()
+);
+```
+
+#### API Usage and Monitoring
+```sql
+-- Rate limiting and API usage tracking
+api_usage_logs (
+  id UUID PRIMARY KEY,
+  user_id UUID REFERENCES users(id),
+  endpoint VARCHAR(255) NOT NULL,
+  method VARCHAR(10) NOT NULL,
+  ip_address INET,
+  user_agent TEXT,
+  response_status INTEGER,
+  response_time_ms INTEGER,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Rate limiting counters
+rate_limit_counters (
+  id UUID PRIMARY KEY,
+  user_id UUID REFERENCES users(id),
+  endpoint_group VARCHAR(100) NOT NULL, -- 'auth', 'upload', 'processing', 'general'
+  request_count INTEGER DEFAULT 0,
+  window_start TIMESTAMP NOT NULL,
+  window_end TIMESTAMP NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+```
+
+### Database Indexes
+
+```sql
+-- Performance indexes for API endpoints
+CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX idx_user_sessions_token ON user_sessions(access_token);
+CREATE INDEX idx_user_sessions_user_id ON user_sessions(user_id);
+CREATE INDEX idx_projects_user_id ON projects(user_id);
+CREATE INDEX idx_video_files_project_id ON video_files(project_id);
+CREATE INDEX idx_audio_files_video_id ON audio_files(video_file_id);
+CREATE INDEX idx_processing_jobs_status ON processing_jobs(status);
+CREATE INDEX idx_processing_jobs_project_id ON processing_jobs(project_id);
+CREATE INDEX idx_voice_profiles_user_id ON voice_profiles(user_id);
+CREATE INDEX idx_transcripts_audio_file_id ON transcripts(audio_file_id);
+CREATE INDEX idx_api_usage_user_id_created ON api_usage_logs(user_id, created_at);
+CREATE INDEX idx_rate_limit_user_endpoint ON rate_limit_counters(user_id, endpoint_group);
+```
+
 ## Authentication
 
 Most endpoints require authentication using Bearer tokens:
