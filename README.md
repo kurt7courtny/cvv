@@ -15,6 +15,46 @@ Perfect for content creators, educators, businesses expanding globally, or anyon
 ## Installation with NVIDIA Docker
 
 ### Prerequisites
+
+#### System Dependencies
+```bash
+# Update package list
+sudo apt update
+
+# Install system dependencies for audio/video processing
+sudo apt install -y \
+    ffmpeg \
+    libsndfile1-dev \
+    libmagic1 \
+    libmagic-dev \
+    libpq-dev \
+    python3-dev \
+    build-essential \
+    pkg-config \
+    libasound2-dev \
+    portaudio19-dev \
+    libportaudio2 \
+    libportaudiocpp0 \
+    libopencv-dev \
+    python3-opencv \
+    redis-server \
+    postgresql \
+    postgresql-contrib
+
+# Install additional audio processing libraries
+sudo apt install -y \
+    libavcodec-dev \
+    libavformat-dev \
+    libswscale-dev \
+    libavresample-dev \
+    libavutil-dev \
+    libfftw3-dev \
+    libsamplerate0-dev \
+    libtag1-dev \
+    libchromaprint-dev
+```
+
+#### NVIDIA Docker Runtime (for GPU acceleration)
 ```bash
 # Install NVIDIA Docker runtime
 curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg
