@@ -1,9 +1,11 @@
 # API Gateway Service
 
 ## File Location
+
 `src/pipeline/gateway/main.py`
 
 ## Responsibilities
+
 - Request routing and load balancing
 - Authentication and authorization
 - Rate limiting and quota management
@@ -11,6 +13,7 @@
 - CORS handling and security headers
 
 ## Implementation Requirements
+
 - FastAPI-based gateway service
 - JWT token validation middleware
 - Rate limiting with Redis backend

@@ -3,23 +3,28 @@
 This document provides a comprehensive reference for all API endpoints in the Video Voice Cloning application.
 
 ## Base URL
-```
-http://localhost:8000/api/v1
+
+```text
+https://api.vvc.example.com/api/v1
 ```
 
 ## Authentication Endpoints
 
 ### Login
+
 - **Endpoint:** `POST /api/v1/auth/login`
 - **Description:** Authenticate user and receive access token
 - **Request Body:**
+
   ```json
   {
     "email": "user@example.com",
     "password": "password123"
   }
   ```
+
 - **Response:**
+
   ```json
   {
     "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
@@ -29,11 +34,13 @@ http://localhost:8000/api/v1
   ```
 
 ### Refresh Token
+
 - **Endpoint:** `POST /api/v1/auth/refresh`
 - **Description:** Refresh access token using refresh token
 - **Headers:** `Authorization: Bearer <refresh_token>`
 
 ### Logout
+
 - **Endpoint:** `DELETE /api/v1/auth/logout`
 - **Description:** Invalidate current session
 - **Headers:** `Authorization: Bearer <access_token>`
@@ -41,22 +48,26 @@ http://localhost:8000/api/v1
 ## File Management Endpoints
 
 ### Upload File
+
 - **Endpoint:** `POST /api/v1/files/upload`
 - **Description:** Upload video file for processing
 - **Content-Type:** `multipart/form-data`
 - **Request Body:**
-  ```
+
+  ```text
   file: <video_file>
   project_name: "My Project"
   ```
 
 ### Get File
+
 - **Endpoint:** `GET /api/v1/files/{file_id}`
 - **Description:** Retrieve file information and download URL
 - **Parameters:**
   - `file_id` (path): Unique file identifier
 
 ### Delete File
+
 - **Endpoint:** `DELETE /api/v1/files/{file_id}`
 - **Description:** Delete uploaded file
 - **Parameters:**
@@ -65,9 +76,11 @@ http://localhost:8000/api/v1
 ## Processing Endpoints
 
 ### Extract Audio
+
 - **Endpoint:** `POST /api/v1/process/extract-audio`
 - **Description:** Extract audio from uploaded video
 - **Request Body:**
+
   ```json
   {
     "video_file_id": "uuid-here",
@@ -77,9 +90,11 @@ http://localhost:8000/api/v1
   ```
 
 ### Transcribe Audio
+
 - **Endpoint:** `POST /api/v1/process/transcribe`
 - **Description:** Convert audio to text
 - **Request Body:**
+
   ```json
   {
     "audio_file_id": "uuid-here",
@@ -89,9 +104,11 @@ http://localhost:8000/api/v1
   ```
 
 ### Clone Voice
+
 - **Endpoint:** `POST /api/v1/process/clone-voice`
 - **Description:** Generate voice clone from audio sample
 - **Request Body:**
+
   ```json
   {
     "audio_file_id": "uuid-here",
@@ -102,9 +119,11 @@ http://localhost:8000/api/v1
   ```
 
 ### Generate Video
+
 - **Endpoint:** `POST /api/v1/process/generate-video`
 - **Description:** Create final video with cloned voice
 - **Request Body:**
+
   ```json
   {
     "original_video_id": "uuid-here",
@@ -115,11 +134,13 @@ http://localhost:8000/api/v1
   ```
 
 ### Check Processing Status
+
 - **Endpoint:** `GET /api/v1/process/status/{job_id}`
 - **Description:** Get current status of processing job
 - **Parameters:**
   - `job_id` (path): Processing job identifier
 - **Response:**
+
   ```json
   {
     "job_id": "uuid-here",
@@ -133,12 +154,14 @@ http://localhost:8000/api/v1
 ## Voice Management Endpoints
 
 ### Get Voice Profiles
+
 - **Endpoint:** `GET /api/v1/voices/profiles`
 - **Description:** List all available voice profiles for user
 - **Query Parameters:**
   - `language` (optional): Filter by language
   - `gender` (optional): Filter by gender
 - **Response:**
+
   ```json
   {
     "profiles": [
@@ -154,9 +177,11 @@ http://localhost:8000/api/v1
   ```
 
 ### Create Voice Profile
+
 - **Endpoint:** `POST /api/v1/voices/create-profile`
 - **Description:** Create new voice profile from audio sample
 - **Request Body:**
+
   ```json
   {
     "name": "My Voice",
@@ -167,6 +192,7 @@ http://localhost:8000/api/v1
   ```
 
 ### Preview Voice
+
 - **Endpoint:** `GET /api/v1/voices/preview/{profile_id}`
 - **Description:** Generate preview audio with voice profile
 - **Parameters:**
@@ -180,6 +206,7 @@ http://localhost:8000/api/v1
 All endpoints may return the following error responses:
 
 ### 400 Bad Request
+
 ```json
 {
   "error": "validation_error",
@@ -192,6 +219,7 @@ All endpoints may return the following error responses:
 ```
 
 ### 401 Unauthorized
+
 ```json
 {
   "error": "unauthorized",
@@ -200,6 +228,7 @@ All endpoints may return the following error responses:
 ```
 
 ### 404 Not Found
+
 ```json
 {
   "error": "not_found",
@@ -208,6 +237,7 @@ All endpoints may return the following error responses:
 ```
 
 ### 429 Too Many Requests
+
 ```json
 {
   "error": "rate_limit_exceeded",
@@ -217,6 +247,7 @@ All endpoints may return the following error responses:
 ```
 
 ### 500 Internal Server Error
+
 ```json
 {
   "error": "internal_error",
@@ -238,6 +269,7 @@ The following database schema supports all API endpoints and operations:
 ### Core Tables
 
 #### Users and Authentication
+
 ```sql
 -- User management
 users (
@@ -263,6 +295,7 @@ user_sessions (
 ```
 
 #### Projects and Files
+
 ```sql
 -- Project management for file organization
 projects (
@@ -304,6 +337,7 @@ audio_files (
 ```
 
 #### Processing and Jobs
+
 ```sql
 -- Processing job tracking for status endpoints
 processing_jobs (
@@ -361,6 +395,7 @@ voice_clones (
 ```
 
 #### API Usage and Monitoring
+
 ```sql
 -- Rate limiting and API usage tracking
 api_usage_logs (
@@ -409,7 +444,7 @@ CREATE INDEX idx_rate_limit_user_endpoint ON rate_limit_counters(user_id, endpoi
 
 Most endpoints require authentication using Bearer tokens:
 
-```
+```text
 Authorization: Bearer <your_access_token>
 ```
 

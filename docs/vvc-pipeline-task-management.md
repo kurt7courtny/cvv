@@ -1,9 +1,11 @@
 # Task Management Service
 
 ## File Location
+
 `src/pipeline/tasks/manager.py`
 
 ## Features
+
 - Distributed task queue management
 - Progress tracking and status updates
 - Error handling and retry logic
@@ -12,6 +14,7 @@
 - WebSocket notifications
 
 ## Implementation Requirements
+
 - Celery task queue integration
 - Redis backend for task storage
 - Progress tracking with real-time updates
